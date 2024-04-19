@@ -30,7 +30,7 @@ dependencies:
   - geos=3.11.0=h39d44d4_0
   - giflib=5.2.2=h64bf75a_0
   - icu=69.1=h0e60522_0
-  - imagecodecs=2021.11.20=py37hfea8715_2
+  - imagecodecs
   - imageio=2.34.0=pyh4b66e23_0
   - imgaug=0.4.0=pyhd8ed1ab_1
   - intel-openmp=2024.1.0=h57928b3_964
@@ -263,6 +263,3 @@ dependencies:
       - werkzeug==2.0.2
       - wrapt==1.13.3
       - zipp==3.6.0
-      -r file:requirements.txt
-postBuild:
-  - ./post_install.sh
