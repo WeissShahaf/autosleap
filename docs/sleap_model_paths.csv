@@ -1,0 +1,7 @@
+model type,model build,path to model folder,instance-center  for multi animal models,optional arguments,VRAM GB,comments on perfomance
+mouse,single,\\gpfs.corp.brain.mpg.de\stem\data\project_hierarchy\Sleap_projects\mouseModel\models\240404_092310.single_instance.n=1877,,--batch_size 50 --frames 1-100,6,nose sometimes jumps. Use b_back as stable keypoint
+cricket,bottom-up,\\gpfs.corp.brain.mpg.de\stem\data\project_hierarchy\Sleap_projects\cricketModel\models\240401_222905.multi_instance.n=1168,,,12,trained on both crickets and roaches
+pups,top-down,\\gpfs.corp.brain.mpg.de\stem\data\project_hierarchy\Sleap_projects\pupsModel\models\240209_223824.multi_instance.n=62,,,,needs more videos and labels
+switch arena-mouse,,,,,,doesn’t exist yet
+switch arena-cricket,,,,,,doesn’t exist yet
+switch arena-pups,,,,,,doesn’t exist yet
