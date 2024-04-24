@@ -16,17 +16,34 @@ script includes autmated GPU and RAM managment and can run multiple video files 
 # Installling
  Download the repository: 
 in the folder you want to put the repo:
-git clone https://github.com/StempelLab/sleap_well && cd sleap_well
-install: (replace mamba for conda if the case)
+git clone  (https://github.com/WeissShahaf/autosleap && cd into it.
+
+install methods:
+A) (replace mamba for conda if the case)
 mamba env create -f environment.yml -n autosleap
 activate autosleap
+
+B) 
+1) create environment:
+   mamba env create -n -n autosleap pytho=3.7.12
+2)   install sleap:
+   mamba create -y -n sleap -c conda-forge -c nvidia -c sleap -c anaconda sleap=1.3.3
+3) install pip dependencies
+   pip install GPUtil
+ 
+
+   
+   
 
 # checking sleap works:
 run sleap-diagnostic
 
 # run:
-make sure you have access to the model_paths.csv file that you will use to get the models' paths
-run: python "sleap_Well\scripts\gui.py" (where sleap_Well is thae path to where you cloned the repository into
+make sure you have access to the model_paths.csv file that you will use to get the models' paths. if using spyder access GPFS from spyder before trying to run.
+
+cd into the cloned repository's "sleapgui" folder (e.g. D:\GitHub\autosleap\sleapgui)
+
+run: python main.py
 
 
 
