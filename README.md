@@ -20,7 +20,7 @@ git clone  (https://github.com/WeissShahaf/autosleap && cd into it.
 
 install methods:
 
-A) 
+# A) (currently unsupported- use B!)
 
 
 1) mamba env create -f environment.yml -n autosleap   (replace mamba for conda if the case)
