@@ -21,9 +21,11 @@ git clone  (https://github.com/WeissShahaf/autosleap && cd into it.
 install methods:
 
 A) 
-(replace mamba for conda if the case)
-mamba env create -f environment.yml -n autosleap
-activate autosleap
+
+
+1) mamba env create -f environment.yml -n autosleap   (replace mamba for conda if the case)
+2) activate autosleap
+
 
 B) 
 1) create environment:
