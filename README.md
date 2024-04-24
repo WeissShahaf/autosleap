@@ -19,7 +19,9 @@ in the folder you want to put the repo:
 git clone  (https://github.com/WeissShahaf/autosleap && cd into it.
 
 install methods:
-A) (replace mamba for conda if the case)
+
+A) 
+(replace mamba for conda if the case)
 mamba env create -f environment.yml -n autosleap
 activate autosleap
 
