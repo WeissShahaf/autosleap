@@ -1,5 +1,5 @@
 from itertools import chain, combinations
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import os
 import sys
 from utils import find_logo
@@ -111,17 +111,30 @@ class InputBox(QWidget):
             self.btn.clicked.disconnect()
             self.btn.clicked.connect(self.getfile)
 
+
     def run_sleapGUI(self):
         file_path = Path(self.le.text())
         print(file_path)
         animal_type = self.cb.currentText().split(',')
         csv_path = Path(self.model_path_CSV_le.text())
-        print(csv_path)
+        print(csv_path)        
         self.close()
         QApplication.processEvents()  # Process any pending events
         QApplication.quit()  # Destroy the QApplication
         sleap_processor = SleapProcessor()      
         sleap_processor.paths_csv=csv_path
+        
+        # Get the directory of the file
+        directory = Path(os.path.dirname(file_path)) / 'tracked'
+        
+        directory.mkdir(exist_ok=True)
+
+        # Construct the log file path
+        log_file_path = Path(directory) / 'sleap_commands.log'
+#        log_file_path = Path(os.path.join(directory, 'tracked' , 'sleap_commands.log'))
+        sleap_processor.log_file_path= log_file_path
+        sleap_processor.start_logger()
+        #run sleap pipeline
         sleap_processor.run_sleap(file_path, animal_type, csv_path)
 
     def close_qt_applications():

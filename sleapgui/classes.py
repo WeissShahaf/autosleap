@@ -2,7 +2,6 @@ import os
 import IPython
 import sys
 import subprocess
-from pathlib import Path
 import pandas as pd
 import multiprocessing
 from multiprocessing import Pool
@@ -10,28 +9,54 @@ import psutil
 import GPUtil
 import tensorflow as tf
 from pathlib import Path, PureWindowsPath
+import logging
 
 
-
-class FailedCommands:
-    """
-    A class to store failed commands and the path of where to save as a text file.
-    """
-    def __init__(self):
-        self.path = []  # Path to save the text file
-        self.commands = []  # List to store failed commands
-        self.results = []
+# class FailedCommands:
+#     """
+#     A class to store failed commands and the path of where to save as a text file.
+#     """
+#     def __init__(self):
+#         self.path = []  # Path to save the text file
+#         self.commands = []  # List to store failed commands
+#         self.results = []
 
 class SleapProcessor:
     """
     A class to process videos using Sleap for pose estimation.
     """
     def __init__(self):
-        self.failed_commands = (
-            FailedCommands()
-        )  # Initialize the failed commands tracker
+       # self.failed_commands = (
+#            FailedCommands()
+#        )  # Initialize the failed commands tracker
         self.paths_csv=[]
         self.num_processes=[]
+        self.log_file_path=Path(r'tracked/sleap_commands.log')
+     
+    def start_logger(self):
+        
+        # Create a logger
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        
+        
+        # Create the log file if it doesn't exist
+        log_file_path=self.log_file_path
+        log_file_path.touch(exist_ok=True)
+        
+        # Create a file handler        
+        handler = logging.FileHandler(self.log_file_path)
+        handler.setLevel(logging.INFO)
+
+        
+        # Create a logging format with timestamps
+        formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        handler.setFormatter(formatter)
+        
+        # Add the handler to the logger
+        self.logger.addHandler(handler)
+
+        
 
     def get_num_processes(self):
         """
@@ -108,17 +133,25 @@ class SleapProcessor:
         command_list = [part.replace("'", "") for part in command.split() if part not in ["'", '"']]
         print(command_list)
        
-        result = subprocess.run(
-            command_list,
-            shell=True,
-            check=True)
+        # Log the command
+        self.logger.info('Running command: %s', command)
+        # Run the command using subprocess
+        result = subprocess.run(command, shell=True, capture_output=True, text=True)
 
-        if not (result.returncode == 0):
-            print(f"Command failed with error code {result.returncode}")
-            print(f"stdout: {result.stdout.decode('utf-8')}")
-            print(f"stderr: {result.stderr.decode('utf-8')}")
-        self.failed_commands.commands.append(command)
-        self.failed_commands.results.append(result)
+        # result = subprocess.run(
+        #     command_list,
+        #     shell=True,
+        #     check=True)
+        
+        # Log the output
+        self.logger.info('Command output: %s', result.stdout)
+
+        # if not (result.returncode == 0):
+        #     print(f"Command failed with error code {result.returncode}")
+        #     print(f"stdout: {result.stdout.decode('utf-8')}")
+        #     print(f"stderr: {result.stderr.decode('utf-8')}")
+        # self.failed_commands.commands.append(command)
+        # self.failed_commands.results.append(result)
 
     def process_video_file(
         self, video_file, input_folder, output_folder, model_type, model_path
@@ -132,7 +165,9 @@ class SleapProcessor:
             model_type (str): The type of the model.
             model_path (str): The path to the model.
         """
-        
+        self.logger.info('Processing batch: video_file=%s, input_folder=%s, output_folder=%s, model_type=%s, model_path=%s',
+                                 video_file, input_folder, output_folder, model_type, model_path)
+
         input_path =Path.as_posix(Path.joinpath(input_folder,video_file))
 
         output_slp_path =Path.as_posix(Path.joinpath(
@@ -212,6 +247,8 @@ class SleapProcessor:
             # Create a multiprocessing Pool
             pool = Pool(processes=num_processes)
             for video_file in video_files:           
+                # Log the parameters
+
                 pool.apply_async(
                     self.process_video_file,
                     args=(
@@ -233,7 +270,7 @@ class SleapProcessor:
             model_types (list): The list of model types.
         """
         suffix = "tracked"
-      
+       
 
         P = Path(input_path)
       
@@ -254,9 +291,7 @@ class SleapProcessor:
             output_folder = Path(os.path.join(input_folder, suffix))
            
             
-        self.failed_commands.path = os.path.join(
-                output_folder, "failed_commands.txt"
-            )
+        
         output_folder.mkdir(exist_ok=True)
 
         for model_type in model_types:
