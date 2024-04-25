@@ -16,21 +16,21 @@ script includes autmated GPU and RAM managment and can run multiple video files 
 # Installling
 
 
-
-
-   
-
-   install sleap: 
+   -install sleap: 
    
    mamba create -y -n autosleap -c conda-forge -c nvidia -c sleap -c anaconda sleap=1.3.3
 
-   Activate autosleap: mamba activate autosleap
+   -Activate autosleap: mamba activate autosleap
    
    #install pip dependencies:    pip install GPUtil IPython
 
-   Download the repository in the folder you want to put the repo:
+   -Download the repository in the folder you want to put the repo:
    
-   git clone  (https://github.com/WeissShahaf/autosleap && cd into it.
+   git clone https://github.com/WeissShahaf/autosleap
+   
+   cd autosleap
+
+   
 
  
 
@@ -53,15 +53,15 @@ run: python main.py
 ![image](https://github.com/StempelLab/sleap_well/assets/101252955/abc5f1bb-f9c4-4824-896a-841b02f3bb0e)
 
 1) Enter input folder or file,  by typing (no "PATH" or r'PATH' needed) or browsing
-    if folder is chosen the program would run on all .avi or .mp4 files in the folder
-   
-3) Choose animal type to track from dropdown menu - single model or combination of models
-4) Check path to CSV containing model paths is correct.
-5) Hit "Submit"
-6) the GUI would close itself and the program would run in your commandline
+    if folder is chosen the program would run on all .avi or .mp4 files in the folder   
+2) Choose animal type to track from dropdown menu - single model or combination of models
+3) Check path to CSV containing model paths is correct.
+4) Hit "Submit"
+ the GUI would close itself and the program would run in your commandline
 
 # Crashes / Trouble shooting:
- If you get a subprocess return result=1 /2 / -1 it means the command failed to execute. check the command for path or argument order violations
+ a log file is created in the tracked subfolder. it sohuld contain information about any crashes.
+  If you get a subprocess return result=1 /2 / -1 it means the command failed to execute. check the command for path or argument order violations
  
 
 
