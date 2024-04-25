@@ -29,7 +29,7 @@ install methods:
 
 B) 
 1) create environment:
-   mamba env create -n -n autosleap pytho=3.7.12
+   mamba env create -n -n autosleap python=3.7.12
 2) activate autosleap
 3)   install sleap:
    mamba create -y -n sleap -c conda-forge -c nvidia -c sleap -c anaconda sleap=1.3.3
