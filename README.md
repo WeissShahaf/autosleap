@@ -14,27 +14,24 @@
 script includes autmated GPU and RAM managment and can run multiple video files in parallel.
 
 # Installling
- Download the repository: 
-in the folder you want to put the repo:
-git clone  (https://github.com/WeissShahaf/autosleap && cd into it.
-
-install methods:
-
-# A) (currently unsupported- use B!)
 
 
-1) mamba env create -f environment.yml -n autosleap   (replace mamba for conda if the case)
-2) activate autosleap
 
 
-B) 
-1) create environment:
-   mamba create -n autosleap python=3.7.12
-2) activate autosleap
-3)   install sleap:
-   mamba create -y -n sleap -c conda-forge -c nvidia -c sleap -c anaconda sleap=1.3.3
-4) install pip dependencies
-   pip install GPUtil
+   
+
+   install sleap: 
+   
+   mamba create -y -n autosleap -c conda-forge -c nvidia -c sleap -c anaconda sleap=1.3.3
+
+   Activate autosleap: mamba activate autosleap
+   
+   #install pip dependencies:    pip install GPUtil IPython
+
+   Download the repository in the folder you want to put the repo:
+   
+   git clone  (https://github.com/WeissShahaf/autosleap && cd into it.
+
  
 
    
