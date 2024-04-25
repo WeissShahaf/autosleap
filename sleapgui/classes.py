@@ -45,7 +45,7 @@ class SleapProcessor:
         log_file_path.touch(exist_ok=True)
         
         # Create a file handler        
-        handler = logging.FileHandler(self.log_file_path)
+        handler = logging.FileHandler(self.log_file_path,'a')
         handler.setLevel(logging.INFO)
 
         
@@ -58,7 +58,7 @@ class SleapProcessor:
 
         
 
-    def get_num_processes(self):
+    def get_num_processes(self,GPU_GB_limit=None):
         """
         Define the number of processes based on RAM and VRAM.
         Returns:
@@ -73,7 +73,8 @@ class SleapProcessor:
         # Assuming one GPU, adjust if multiple GPUs
 
         # Define the number of processes based on RAM and VRAM
-        GPU_GB_limit = 10  # Limit the GPU memory to 12GB
+        if GPU_GB_limit is None:
+         GPU_GB_limit = 12  # Limit the GPU memory to 12GB
         # cricket model takes ~7GB VRAN to run on batch size = 4
 
         CPU_GB_limit = 5  # Limit the CPU memory to 12GB
@@ -122,6 +123,17 @@ class SleapProcessor:
         current_path=model_paths.get(model_type)
 
         print(PureWindowsPath(current_path))
+        
+        import numpy as np
+        GPUmem=model_paths_df.set_index("model type").to_dict()[
+            "VRAM GB"
+        ]
+        
+        reqVRAM=(GPUmem.get(model_type))
+        if ~np.isnan(reqVRAM):
+          reqVRAM=np.int8(reqVRAM)  
+        
+        
         return current_path
 
     def handle_subprocess(self, command):

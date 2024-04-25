@@ -125,16 +125,16 @@ class InputBox(QWidget):
         sleap_processor.paths_csv=csv_path
         
         # Get the directory of the file
-        directory = Path(os.path.dirname(file_path)) / 'tracked'
-        
+        directory = Path(os.path.dirname(file_path)) / 'tracked'      
         directory.mkdir(exist_ok=True)
 
         # Construct the log file path
         log_file_path = Path(directory) / 'sleap_commands.log'
-#        log_file_path = Path(os.path.join(directory, 'tracked' , 'sleap_commands.log'))
         sleap_processor.log_file_path= log_file_path
         sleap_processor.start_logger()
-        #run sleap pipeline
+
+        sleap_processor.logger.info('Processing: input_folder=%s,  model_type=%s, csv_file=%s', file_path, animal_type, csv_path)        
+        #run sleap pipeline        
         sleap_processor.run_sleap(file_path, animal_type, csv_path)
 
     def close_qt_applications():
