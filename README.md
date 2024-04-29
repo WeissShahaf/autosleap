@@ -45,7 +45,7 @@ make sure you have access to the model_paths.csv file that you will use to get t
 
 cd into the cloned repository's "sleapgui" folder (e.g. D:\GitHub\autosleap\sleapgui)
 
-run: python main.py
+run: python autosleap.py
 
 
 
