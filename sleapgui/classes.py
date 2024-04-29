@@ -10,28 +10,45 @@ import GPUtil
 import tensorflow as tf
 from pathlib import Path, PureWindowsPath
 import logging
-
-
-# class FailedCommands:
-#     """
-#     A class to store failed commands and the path of where to save as a text file.
-#     """
-#     def __init__(self):
-#         self.path = []  # Path to save the text file
-#         self.commands = []  # List to store failed commands
-#         self.results = []
+import configparser
+import json
 
 class SleapProcessor:
     """
     A class to process videos using Sleap for pose estimation.
     """
     def __init__(self):
-       # self.failed_commands = (
-#            FailedCommands()
-#        )  # Initialize the failed commands tracker
-        self.paths_csv=[]
-        self.num_processes=[]
+        
+        self.file_path = Path()
+        self.animal_type = []
+        self.csv_path = Path()
+        self.optional_args = ''
+        self.config_path=Path
+        
+      
+        self.paths_csv=Path()
+        self.num_processes=1
+        
         self.log_file_path=Path(r'tracked/sleap_commands.log')
+              
+        env_dir = Path(sys.prefix)
+        env_dir=env_dir.joinpath(env_dir, 'scripts')
+        self.config_path = Path(env_dir, 'autosleap_config.json')  # Construct the path to the configuration file        
+        
+        
+    def read_config(self):
+     # If the configuration file exists and is not empty, fill in values from the configuration file
+     if self.config_path.exists() and os.path.getsize(self.config_path) > 0:
+        with open(self.config_path, 'r') as f:
+            data = json.load(f)
+
+        self.file_path = Path(data['file_path'])
+        self.animal_type = data['animal_type']
+        self.csv_path = Path(data['csv_path'])
+        self.optional_args = data['optional_args']
+        self.paths_csv = Path(data['csv_path'])
+        self.log_file_path = Path(data.get('log_file_path', 'tracked/sleap_commands.log'))
+
      
     def start_logger(self):
         
@@ -88,7 +105,27 @@ class SleapProcessor:
             
         self.num_processes=num_processes
         return num_processes
-
+    
+    def convert(self, value, data_type):
+     """
+     Convert a value to a specified data type.
+     Args:
+        value: The value.
+         data_type (str): The data type.
+     Returns:
+         The value converted to the specified data type.
+     """
+     if 'path' in data_type:
+        return Path(value)
+     elif data_type == 'str':
+        return str(value)
+     elif data_type == 'int':
+        return int(value)
+     elif data_type == 'float':
+        return float(value)
+     elif data_type == 'list':
+        return list(value)
+    # Add more elif statements here for other data types
 
     def reset_gpu_memory():
         """
@@ -110,8 +147,8 @@ class SleapProcessor:
          #    r"\\gpfs.corp.brain.mpg.de\stem\data\project_hierarchy\Sleap_projects\sleap_model_paths.csv"
          # )
         if csv_path is None:
-           csv_path = Path(self.paths_csv)
-           
+           csv_path = self.paths_csv
+       # IPython.core.debugger.set_trace()           
         model_paths_df = pd.read_csv(csv_path,engine="python",sep=',',encoding="cp437")
         model_paths_df["path to model folder"] = model_paths_df[
             "path to model folder"
@@ -121,7 +158,7 @@ class SleapProcessor:
         ]
 
         current_path=model_paths.get(model_type)
-
+       
         print(PureWindowsPath(current_path))
         
         import numpy as np
@@ -146,7 +183,7 @@ class SleapProcessor:
         print(command_list)
        
         # Log the command
-        self.logger.info('Running command: %s', command)
+        self.logger.info('Running command: %s', command_list)
         # Run the command using subprocess
         result = subprocess.run(command, shell=True, capture_output=True, text=True)
 
@@ -274,16 +311,26 @@ class SleapProcessor:
             pool.close()
             pool.join()
 
-    def run_sleap(self, input_path, model_types: list = "mouse",csv_path=None):
+    def run_sleap(self):
         """
         Runs Sleap processing on video files.
         Args:
             input_path (str): The input path.
             model_types (list): The list of model types.
         """
+        #  prevously def run_sleap(self, input_path, model_types: list = "mouse",csv_path=None):
+            #   called      sleap_processor.run_sleap((file_path, animal_type, csv_path))
+            
         suffix = "tracked"
-       
+        input_path = self.file_path
+        csv_path = self.csv_path
+        model_types = self.animal_type
+        if not isinstance(model_types, list):
+            model_types = [model_types]
+            
+        print(model_types)
 
+        
         P = Path(input_path)
       
         
@@ -308,10 +355,10 @@ class SleapProcessor:
 
         for model_type in model_types:
             print(model_type)
-            if csv_path is None:
-             model_path = self.find_model_path_from_csv(model_type)
-            else:
-             model_path = self.find_model_path_from_csv(model_type,csv_path)
+        #    if csv_path is None:
+#             model_path = self.find_model_path_from_csv(model_type)
+#            else:
+            model_path = self.find_model_path_from_csv(model_type,csv_path)
              
              #run the files
             self.process_batch(
@@ -321,3 +368,7 @@ class SleapProcessor:
                 model_type,
                 model_path,
             )
+    # # Get exception info
+    # exc_type, exc_value, exc_traceback = sys.exc_info()
+    # if exc_type is not None:
+    #     print(f"An error occurred: {exc_value}")

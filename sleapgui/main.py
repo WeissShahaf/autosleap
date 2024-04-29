@@ -3,8 +3,11 @@ from PySide2.QtWidgets import QApplication
 import sys
 import os
 from classes import SleapProcessor
-from gui2 import InputBox
-env_dir = os.path.dirname(sys.executable)  # Get the directory of the current Python interpreter       
+from gui4 import InputBox
+from pathlib import Path, PureWindowsPath
+
+
+env_dir = Path(sys.prefix)    
 sys.path.append(env_dir)
 
 
