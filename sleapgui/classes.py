@@ -230,10 +230,17 @@ class SleapProcessor:
         ))
         model=Path.as_posix(Path(model_path))
         
-        # Track poses
-        track_command = (
+        if self.optional_args:
+       
+         track_command = (
+             f"sleap-track -m {model} -o {output_slp_path} {self.optional_args} {input_path}"
+         )
+        else:
+        
+         # Track poses
+         track_command = (
             f"sleap-track -m {model} -o {output_slp_path} {input_path}"
-        )
+         )
        
        # IPython.core.debugger.set_trace()
         print(f"infering: {track_command}")
