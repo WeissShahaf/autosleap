@@ -50,13 +50,20 @@ run: python autosleap.py
 
 
 # Using the GUI:
-![image](https://github.com/StempelLab/sleap_well/assets/101252955/abc5f1bb-f9c4-4824-896a-841b02f3bb0e)
+![GUI](https://github.com/WeissShahaf/autosleap/assets/45653608/f7dcad2b-8f25-4044-83c4-8f573014f8e0)
+![image](https://github.com/WeissShahaf/autosleap/assets/45653608/79a4a966-3c98-4a8e-88ae-c50d43ab11c0)
 
-1) Enter input folder or file,  by typing (no "PATH" or r'PATH' needed) or browsing
-    if folder is chosen the program would run on all .avi or .mp4 files in the folder   
-2) Choose animal type to track from dropdown menu - single model or combination of models
-3) Check path to CSV containing model paths is correct.
-4) Hit "Submit"
+When you start the GUI,
+It first looks for a config file in the environment folder: 'autosleap_config.json'
+The config file stores parameters from the last run. And used to pre-fill input fields.
+
+The first field to fill is the path to the data.
+Here you have several options:
+1)	First decide if you want to run on a specific video file or a whole folder. If the latter tick the box.
+2)	You can manually enter the path (‘no “r” needed)
+3)	Alternatively, browse for the video folder / file
+4)	Enter any optional arguments for sleap-track
+
  the GUI would close itself and the program would run in your commandline
 
 # Crashes / Trouble shooting:
