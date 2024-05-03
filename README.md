@@ -51,7 +51,8 @@ run: python autosleap.py
 
 # Using the GUI:
 ![GUI](https://github.com/WeissShahaf/autosleap/assets/45653608/f7dcad2b-8f25-4044-83c4-8f573014f8e0)
-![image](https://github.com/WeissShahaf/autosleap/assets/45653608/79a4a966-3c98-4a8e-88ae-c50d43ab11c0)
+
+
 
 When you start the GUI,
 It first looks for a config file in the environment folder: 'autosleap_config.json'
@@ -64,11 +65,37 @@ Here you have several options:
 3)	Alternatively, browse for the video folder / file
 4)	Enter any optional arguments for sleap-track
 
- the GUI would close itself and the program would run in your commandline
+![vid](https://github.com/WeissShahaf/autosleap/assets/45653608/ab0da8f9-fbd8-4836-a828-b2644af91dbc)
+
+The two methods are mutually exclusive and choosing one will deselect the other.
+1)	From a csv file
+2)	Manually enter model folder
+   
+![selection](https://github.com/WeissShahaf/autosleap/assets/45653608/2d17d145-34c6-49b5-ac60-fd32fb1b22a4)
+
+1.	Get models path From a CSV file, and run any combination of models in the csv file:
+ a.	Fill in path to csv file
+ b.	Alternatively, browse for the csv file  
+ c.	If using default settings, choose combination of models to infer from a dropdown menu
+ d.	if model path was changed in a/b, update model combination and choose from menu
+
+![csv](https://github.com/WeissShahaf/autosleap/assets/45653608/a76b5d87-3f0d-40b9-9795-c2a98447ed30)
+
+2. Manually input a model’s path.
+ a.	Enter a prefix for the model
+ b.	Browse for model folder
+ c.	Enter a prefix model
+ d.	save the model prefix and path to the csv file
+
+![manual](https://github.com/WeissShahaf/autosleap/assets/45653608/8011f738-9410-45eb-9746-324ee113fef3)
+
+Now you can hit “Run” to run, refill the GUI using the config file by hitting “reset”, or exit by hitting “quit”. Note that any errors will appear in the bottom of the gui as a status text.
+
+![run](https://github.com/WeissShahaf/autosleap/assets/45653608/cd20d4da-ac35-4464-bb5a-761919d428fd)
 
 # Crashes / Trouble shooting:
- a log file is created in the tracked subfolder. it sohuld contain information about any crashes.
-  If you get a subprocess return result=1 /2 / -1 it means the command failed to execute. check the command for path or argument order violations
+A log file is created in the tracked subfolder. it sohuld contain information about any crashes.
+
  
 
 
