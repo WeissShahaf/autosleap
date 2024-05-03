@@ -66,7 +66,7 @@ Here you have several options:
 
 ![vid](https://github.com/WeissShahaf/autosleap/assets/45653608/ab0da8f9-fbd8-4836-a828-b2644af91dbc)
 
-The two methods are mutually exclusive and choosing one will deselect the other.
+There are several ways to use the GUI: The two methods are mutually exclusive and choosing one will deselect the other.
 1)	From a csv file
 2)	Manually enter model folder
    
