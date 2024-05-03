@@ -1,4 +1,3 @@
-# This is a work in progress!
 # Automated sleap inference script / GUI
 
 ![half_logo](https://github.com/StempelLab/sleap_well/assets/101252955/c206e1bb-242e-4b02-a9a8-89c4b4c3b87d)
