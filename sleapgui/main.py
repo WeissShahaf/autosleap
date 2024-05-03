@@ -3,7 +3,7 @@ from PySide2.QtWidgets import QApplication
 import sys
 import os
 from classes import SleapProcessor
-from gui4 import InputBox
+from gui8 import InputBox
 from pathlib import Path, PureWindowsPath
 
 

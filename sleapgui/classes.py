@@ -23,8 +23,8 @@ class SleapProcessor:
         self.animal_type = []
         self.csv_path = Path()
         self.optional_args = ''
-        self.config_path=Path
-        
+        self.config_path=Path()
+        self.chosen_model =Path ()     
       
         self.paths_csv=Path()
         self.num_processes=1
@@ -48,6 +48,8 @@ class SleapProcessor:
         self.optional_args = data['optional_args']
         self.paths_csv = Path(data['csv_path'])
         self.log_file_path = Path(data.get('log_file_path', 'tracked/sleap_commands.log'))
+        self.chosen_model = Path(data['chosen_model'])
+        self.model_prefix = data['model_prefix']
 
      
     def start_logger(self):
@@ -229,15 +231,13 @@ class SleapProcessor:
             output_folder, f"{video_file}.{model_type}.mp4"
         ))
         model=Path.as_posix(Path(model_path))
-        
-        if self.optional_args:
-       
+        # Track poses
+         #if optional_args given use them
+        if self.optional_args:        
          track_command = (
              f"sleap-track -m {model} -o {output_slp_path} {self.optional_args} {input_path}"
          )
         else:
-        
-         # Track poses
          track_command = (
             f"sleap-track -m {model} -o {output_slp_path} {input_path}"
          )
@@ -293,7 +293,7 @@ class SleapProcessor:
             )
         else:              
             
-          #  IPython.core.debugger.set_trace()
+
             #get optimal number of processes for the current PC at current timepoint
             num_processes = self.get_num_processes()
             if num_processes > len(video_files):
@@ -331,7 +331,16 @@ class SleapProcessor:
         suffix = "tracked"
         input_path = self.file_path
         csv_path = self.csv_path
+        chosen_model = self.chosen_model
+        model_prefix = self.model_prefix
         model_types = self.animal_type
+        
+        if Path.is_dir(chosen_model):
+            model_types = model_prefix
+            csv_path = chosen_model
+    
+      
+        # if model_types isn't a list make it one
         if not isinstance(model_types, list):
             model_types = [model_types]
             
@@ -359,13 +368,16 @@ class SleapProcessor:
             
         
         output_folder.mkdir(exist_ok=True)
-
+        
+        
+        #if manual model path was used, skip model_type iterations
+        print(video_files)
         for model_type in model_types:
             print(model_type)
-        #    if csv_path is None:
-#             model_path = self.find_model_path_from_csv(model_type)
-#            else:
-            model_path = self.find_model_path_from_csv(model_type,csv_path)
+            if Path.is_dir(csv_path):
+             model_path = csv_path
+            else:
+             model_path = self.find_model_path_from_csv(model_type,csv_path)
              
              #run the files
             self.process_batch(
