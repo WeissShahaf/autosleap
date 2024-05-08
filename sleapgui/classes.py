@@ -216,6 +216,8 @@ class SleapProcessor:
             model_type (str): The type of the model.
             model_path (str): The path to the model.
         """
+        
+        print(f"processing {video_file}")
         self.logger.info('Processing batch: video_file=%s, input_folder=%s, output_folder=%s, model_type=%s, model_path=%s',
                                  video_file, input_folder, output_folder, model_type, model_path)
 
@@ -269,6 +271,21 @@ class SleapProcessor:
         nl = "\n"
         text = f"Tracked files created:\n{nl}{nl.join(names)}"
         print(text)
+        
+    def process_files(self, video_files, input_folder, output_folder, model_type, model_path):
+        if len(video_files) == 1:#single file
+            self.process_video_file(video_files[0], input_folder, output_folder, model_type, model_path)
+        else: #multiple files
+            num_processes = self.get_num_processes()
+            if num_processes > len(video_files): num_processes = len(video_files)
+            print(f"# of parallel processes: {num_processes}")
+
+            with Pool(processes=num_processes) as pool:
+                pool.starmap(
+                    self.process_video_file,
+                    [(video_file, input_folder, output_folder, model_type, model_path) for video_file in video_files]
+                )
+            
 
     def process_batch(
         self, video_files, input_folder, output_folder, model_type, model_path
@@ -282,41 +299,33 @@ class SleapProcessor:
             model_type (str): The type of the model.
             model_path (str): The path to the model.
         """
-        if len(video_files)==1:#single file
-            video_file=video_files[0]
-            self.process_video_file(
-                video_file,
-                input_folder,
-                output_folder,
-                model_type,
-                model_path,
-            )
-        else:              
-            
+       # IPython.core.debugger.set_trace()   
+        self.process_files(video_files, input_folder, output_folder, model_type, model_path)
+         
 
-            #get optimal number of processes for the current PC at current timepoint
-            num_processes = self.get_num_processes()
-            if num_processes > len(video_files):
-               num_processes = len(video_files)
+            # #get optimal number of processes for the current PC at current timepoint
+            # num_processes = self.get_num_processes()
+            # if num_processes > len(video_files):
+            #    num_processes = len(video_files)
                
-            print(f"# of processes: {num_processes}")
-            # Create a multiprocessing Pool
-            pool = Pool(processes=num_processes)
-            for video_file in video_files:           
-                # Log the parameters
-
-                pool.apply_async(
-                    self.process_video_file,
-                    args=(
-                        video_file,
-                        input_folder,
-                        output_folder,
-                        model_type,
-                        model_path,
-                    ),
-                )
-            pool.close()
-            pool.join()
+            # print(f"# of processes: {num_processes}")
+            # # Create a multiprocessing Pool
+            # pool = Pool(processes=num_processes)
+            # for video_file in video_files:           
+            #     # Log the parameters
+              
+            #     pool.apply_async(
+            #         self.process_video_file,
+            #         args=(
+            #             video_file,
+            #             input_folder,
+            #             output_folder,
+            #             model_type,
+            #             model_path,
+            #         ),
+            #     )
+            # pool.close()
+            # pool.join()
 
     def run_sleap(self):
         """
@@ -349,7 +358,7 @@ class SleapProcessor:
         
         P = Path(input_path)
       
-        
+#        IPython.core.debugger.set_trace()           
         if Path.is_dir(Path(input_path)):
             input_folder = Path(input_path)
             output_folder = Path(os.path.join(input_folder, suffix))
