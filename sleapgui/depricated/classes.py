@@ -51,51 +51,29 @@ class SleapProcessor:
         self.chosen_model = Path(data['chosen_model'])
         self.model_prefix = data['model_prefix']
 
+     
     def start_logger(self):
-    # Create a logger
+        
+        # Create a logger
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
-    
-        # Remove all handlers
-        self.logger.handlers = []
-    
+        
+        
         # Create the log file if it doesn't exist
         log_file_path=self.log_file_path
         log_file_path.touch(exist_ok=True)
-    
+        
         # Create a file handler        
         handler = logging.FileHandler(self.log_file_path,'a')
         handler.setLevel(logging.INFO)
-    
+
+        
         # Create a logging format with timestamps
         formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
         handler.setFormatter(formatter)
-    
+        
         # Add the handler to the logger
         self.logger.addHandler(handler)
-
-    # def start_logger(self):
-        
-    #     # Create a logger
-    #     self.logger = logging.getLogger(__name__)
-    #     self.logger.setLevel(logging.INFO)
-        
-        
-    #     # Create the log file if it doesn't exist
-    #     log_file_path=self.log_file_path
-    #     log_file_path.touch(exist_ok=True)
-        
-    #     # Create a file handler        
-    #     handler = logging.FileHandler(self.log_file_path,'a')
-    #     handler.setLevel(logging.INFO)
-
-        
-    #     # Create a logging format with timestamps
-    #     formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    #     handler.setFormatter(formatter)
-        
-    #     # Add the handler to the logger
-    #     self.logger.addHandler(handler)
 
         
 
@@ -225,7 +203,10 @@ class SleapProcessor:
         #     print(f"stderr: {result.stderr.decode('utf-8')}")
         # self.failed_commands.commands.append(command)
         # self.failed_commands.results.append(result)
-    def process_video_file(self, video_file, input_folder, output_folder, model_type, model_path):
+
+    def process_video_file(
+        self, video_file, input_folder, output_folder, model_type, model_path
+    ):
         """
         Processes a single video file using Sleap.
         Args:
@@ -236,12 +217,12 @@ class SleapProcessor:
             model_path (str): The path to the model.
         """
         
-        # Log the parameters
+        print(f"processing {video_file}")
         self.logger.info('Processing batch: video_file=%s, input_folder=%s, output_folder=%s, model_type=%s, model_path=%s',
                                  video_file, input_folder, output_folder, model_type, model_path)
-    
+
         input_path =Path.as_posix(Path.joinpath(input_folder,video_file))
-    
+
         output_slp_path =Path.as_posix(Path.joinpath(
             output_folder, f"{video_file}.{model_type}.slp"
         ))
@@ -263,146 +244,49 @@ class SleapProcessor:
             f"sleap-track -m {model} -o {output_slp_path} {input_path}"
          )
        
-        # Log the command
-        self.logger.info('Running command: %s', track_command)
+       # IPython.core.debugger.set_trace()
+        print(f"infering: {track_command}")
         self.handle_subprocess(track_command)
-    
+
         # Convert to h5 format
         if Path.is_file(Path(output_slp_path)):
          h5_command = f"sleap-convert -o {output_h5_path} --format analysis {output_slp_path}"
-         # Log the command
-         self.logger.info('Running command: %s', h5_command)
+         print(f"Converting to h5: {h5_command}")
          self.handle_subprocess(h5_command)
         else:
-            self.logger.error(f"cannot convert video, file does not exist: {output_slp_path} ")
-    
+            print(f"cannot convert video, file does not exist: {output_slp_path} ")
+
         # Render video with poses
         if  Path.is_file(Path(output_h5_path)):
          render_command = (
             f"sleap-render -o {output_mp4_path} -f 50 {output_slp_path}"
          )
-         # Log the command
-         self.logger.info('Running command: %s', render_command)
+         print(f"Rendering video: {render_command}")
          self.handle_subprocess(render_command)
         else:
-            self.logger.error(f"cannot render video, file does not exist: {output_slp_path} ")
-    
+            print(f"cannot render video, file does not exist: {output_slp_path} ")
+
         # Print paths of created files
         names = [output_slp_path, output_h5_path, output_mp4_path]
         nl = "\n"
         text = f"Tracked files created:\n{nl}{nl.join(names)}"
-        # Log the output
-        self.logger.info('Command output: %s', text)
-
-    # def process_video_file(
-    #     self, video_file, input_folder, output_folder, model_type, model_path
-    # ):
-    #     """
-    #     Processes a single video file using Sleap.
-    #     Args:
-    #         video_file (str): The video file to be processed.
-    #         input_folder (str): The input folder path.
-    #         output_folder (str): The output folder path.
-    #         model_type (str): The type of the model.
-    #         model_path (str): The path to the model.
-    #     """
+        print(text)
         
-    #     print(f"processing {video_file}")
-    #     self.logger.info('Processing batch: video_file=%s, input_folder=%s, output_folder=%s, model_type=%s, model_path=%s',
-    #                              video_file, input_folder, output_folder, model_type, model_path)
-
-    #     input_path =Path.as_posix(Path.joinpath(input_folder,video_file))
-
-    #     output_slp_path =Path.as_posix(Path.joinpath(
-    #         output_folder, f"{video_file}.{model_type}.slp"
-    #     ))
-    #     output_h5_path =Path.as_posix(Path.joinpath(
-    #         output_folder, f"{video_file}.{model_type}.h5"
-    #     ))
-    #     output_mp4_path =Path.as_posix(Path.joinpath(
-    #         output_folder, f"{video_file}.{model_type}.mp4"
-    #     ))
-    #     model=Path.as_posix(Path(model_path))
-    #     # Track poses
-    #      #if optional_args given use them
-    #     if self.optional_args:        
-    #      track_command = (
-    #          f"sleap-track -m {model} -o {output_slp_path} {self.optional_args} {input_path}"
-    #      )
-    #     else:
-    #      track_command = (
-    #         f"sleap-track -m {model} -o {output_slp_path} {input_path}"
-    #      )
-       
-    #    # IPython.core.debugger.set_trace()
-    #     print(f"infering: {track_command}")
-    #     self.handle_subprocess(track_command)
-
-    #     # Convert to h5 format
-    #     if Path.is_file(Path(output_slp_path)):
-    #      h5_command = f"sleap-convert -o {output_h5_path} --format analysis {output_slp_path}"
-    #      print(f"Converting to h5: {h5_command}")
-    #      self.handle_subprocess(h5_command)
-    #     else:
-    #         print(f"cannot convert video, file does not exist: {output_slp_path} ")
-
-    #     # Render video with poses
-    #     if  Path.is_file(Path(output_h5_path)):
-    #      render_command = (
-    #         f"sleap-render -o {output_mp4_path} -f 50 {output_slp_path}"
-    #      )
-    #      print(f"Rendering video: {render_command}")
-    #      self.handle_subprocess(render_command)
-    #     else:
-    #         print(f"cannot render video, file does not exist: {output_slp_path} ")
-
-    #     # Print paths of created files
-    #     names = [output_slp_path, output_h5_path, output_mp4_path]
-    #     nl = "\n"
-    #     text = f"Tracked files created:\n{nl}{nl.join(names)}"
-    #     print(text)
-    
-    def process_and_print(self, video_file, input_folder, output_folder, model_type, model_path):
-        print(f"Processing: {video_file}")
-        self.process_video_file(video_file, input_folder, output_folder, model_type, model_path)
-        
-    def worker(self,args):
-       self.process_and_print(*args)
     def process_files(self, video_files, input_folder, output_folder, model_type, model_path):
-                  
-       
-        
         if len(video_files) == 1:#single file
             self.process_video_file(video_files[0], input_folder, output_folder, model_type, model_path)
         else: #multiple files
             num_processes = self.get_num_processes()
-            num_processes = min(4, len(video_files))  # Ensure num_processes does not exceed length of video_files
-#            if num_processes > len(video_files): num_processes = len(video_files)
+            if num_processes > len(video_files): num_processes = len(video_files)
             print(f"# of parallel processes: {num_processes}")
- 
-            from multiprocessing.pool import ThreadPool
-            with ThreadPool(processes=num_processes) as pool:
+
+            with Pool(processes=num_processes) as pool:
                 pool.starmap(
-                    self.process_and_print,
+                    self.process_video_file,
                     [(video_file, input_folder, output_folder, model_type, model_path) for video_file in video_files]
-                        )
+                )
             
-            # with Pool(processes=num_processes) as pool:
-            #     [pool.apply_async(self.worker, (video_file, input_folder, output_folder, model_type, model_path)) for video_file in video_files]
-                # get the results when they are ready
-                #results = [result.get() for result in results]
-            #     pool.starmap(
-            #     self.process_and_print,
-            #     [(video_file, input_folder, output_folder, model_type, model_path) for video_file in video_files]
-            # )
-            # #    pool.starmap(
-            # #     self.process_and_print,
-            # #     [(video_file, input_folder, output_folder, model_type, model_path) for video_file in video_files]
-            # # )
-                
-           
-    
-                                       
+
     def process_batch(
         self, video_files, input_folder, output_folder, model_type, model_path
     ):
