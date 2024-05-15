@@ -15,19 +15,7 @@ from PySide2.QtWidgets import QApplication, QLabel, QVBoxLayout, QHBoxLayout, QP
 
 
 
-
-
 class InputBox(QWidget):    
-    # class SleapThread(QThread):
-    #     signal = Signal(str)
-    
-    #     def __init__(self, sleap_processor):
-    #         QThread.__init__(self)
-    #         self.sleap_processor = sleap_processor
-    #         self.signal.emit("Running SLEAP")
-    
-    #     def run(self):
-    #         self.sleap_processor.run_sleap()
 
                
     def __init__(self):
@@ -513,16 +501,6 @@ class InputBox(QWidget):
             sleap_processor.read_config()
             sleap_processor.run_sleap()
             # run sleap pipeline             
-            
-            # self.thread = self.SleapThread(sleap_processor)
-
-            # self.thread.start()           
-            # self.thread.signal.emit("Process completed successfully.")
-
-            
-            
-        #    self.status_message.setText("Running SLEAP")
-               
     
         except Exception as e: #if there's an error, show it to the user
             noErrors = False
@@ -530,12 +508,7 @@ class InputBox(QWidget):
             message =f"An error occurred: {str(e)}\n{tb}"
             #self.thread.signal.connect(self.update_status_message)
             self.update_status_message(message)         
-        
-        # if noErrors: 
-        #     message = "Succescully finished processing"
-        #     #self.thread.signal.connect(self.update_status_message)
-        #     self.update_status_message(message)         
-            
+           
                     
 def manage_app():
         # Check if QApplication instance exists
@@ -548,10 +521,6 @@ def manage_app():
         # Create a new QApplication instance
         app = QApplication(sys.argv)
         return app
-
-# Usage:
-   
-     
 
 if __name__ == '__main__':
     app = manage_app()  
