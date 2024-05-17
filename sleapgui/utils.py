@@ -65,3 +65,12 @@ def reset_gpu_memory():
     tf.keras.backend.clear_session()
     
     
+def ascii_logo():
+    ascii_art = f"""
+    A      U   U  TTTTT  OOOOO     SSSS  L      EEE      A      PPP  
+   A A     U   U    T    O   O     S     L      E       A A     P  P 
+  AAAAA    U   U    T    O   O --- SSS   L      EEE    AAAAA    PPP  
+ A     A   U   U    T    O   O        S  L      E     A     A   P    
+A       A  UUUUU    T    OOOOO     SSSS  LLLLL  EEE  A       A  P
+"""
+    print(ascii_art)
