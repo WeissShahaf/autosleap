@@ -74,10 +74,14 @@ cd into the cloned repository's "sleapgui" folder (e.g. D:\GitHub\autosleap\slea
 run: python autosleap.py
 
 
-The script runs sleap sleap-track,sleap-convert,sleap-render commands on all files for all model types. 
 
 
-Includes autmated GPU and RAM managment and can run multiple video files in parallel. 
+- The script runs sleap sleap-track,sleap-convert,sleap-render commands on all files for all model types. 
+
+
+
+
+- Includes autmated GPU and RAM managment and can run multiple video files in parallel. 
 
 
 
