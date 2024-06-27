@@ -6,6 +6,8 @@ written by Shahaf Weiss 2024.
 
 
 This App is used to run SLEAP inference of multiple models, on multiple videos, in parallel.
+The script runs sleap sleap-track,sleap-convert,sleap-render commands on all files for all model types. Includes autmated GPU and RAM managment and can run multiple video files in parallel. 
+Models can be manually loaded or read from a CSV file (see example in Docs). the parameters used are stored in a json file, and preloaded the next time the app is loaded.
 
 
 
@@ -25,11 +27,11 @@ Use case #2: a folder containing 10 videos of a mouse in an open field. you can 
  model_type: a list of model types (must exit in csv_path file)
 
 
-The script runs sleap sleap-track,sleap-convert,sleap-render commands on all files for all model types.
 
-script includes autmated GPU and RAM managment and can run multiple video files in parallel.
 
-models can be manually loaded or read from a CSV file (see example in Docs). the parameters used are stored in a json file, and preloaded the next time the app is loaded.
+
+
+
 
 # Installling
 
