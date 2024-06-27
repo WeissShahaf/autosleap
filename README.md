@@ -62,13 +62,14 @@ run: python autosleap.py
 
 
 # Using the GUI:
-![GUI](https://github.com/WeissShahaf/autosleap/assets/45653608/f7dcad2b-8f25-4044-83c4-8f573014f8e0)
+
 
 
 
 When you start the GUI,
 It first looks for a config file in the environment folder: 'autosleap_config.json'
 The config file stores parameters from the last run. And used to pre-fill input fields.
+![GUI](https://github.com/WeissShahaf/autosleap/assets/45653608/f7dcad2b-8f25-4044-83c4-8f573014f8e0)
 
 The first field to fill is the path to the data.
 Here you have several options:
@@ -78,7 +79,6 @@ Here you have several options:
 4)	Enter any optional arguments for sleap-track
 
 ![vid](https://github.com/WeissShahaf/autosleap/assets/45653608/ab0da8f9-fbd8-4836-a828-b2644af91dbc)
-
 
 
 There are several ways to use the GUI: The two methods are mutually exclusive and choosing one will deselect the other.
