@@ -2,6 +2,15 @@
 
 ![half_logo](https://github.com/StempelLab/sleap_well/assets/101252955/c206e1bb-242e-4b02-a9a8-89c4b4c3b87d)
 
+written by Shahaf Weiss 2024.
+This App is used to run SLEAP inference of multiple models, on multiple videos, in parallel.
+use cases:
+example 1: 10 videos of a mouse hunting crickets, require running each video through a mouse tracking model and a cricket tracking model.
+example 2: a folder containing 10 videos of a mouse in an open field. you can use a "folder" option to run the model(s) on all videos in the folder.
+
+models can be manually loaded or read from a CSV file (see example in Docs).
+the parameters used are stored in a json file, and preloaded the next time the app is loaded.
+
 
  The core script does the following:
  gets user input:
