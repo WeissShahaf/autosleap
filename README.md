@@ -19,17 +19,17 @@ script includes autmated GPU and RAM managment and can run multiple video files 
    
    mamba create -y -n autosleap -c conda-forge -c nvidia -c sleap -c anaconda sleap=1.3.3
 
+
    -Activate autosleap: mamba activate autosleap
    
-   #install pip dependencies:    pip install GPUtil IPython
+   -install pip dependencies:    pip install GPUtil IPython
 
-   -Download the repository in the folder you want to put the repo:
+   -Download the repository into the folder you want to put the repo:
    
-   git clone https://github.com/WeissShahaf/autosleap
+   git clone https://github.com/WeissShahaf/autosleap  # or optionally add PATH to your desired folder
    
    cd autosleap
-
-   
+ 
 
  
 
@@ -40,6 +40,7 @@ script includes autmated GPU and RAM managment and can run multiple video files 
 run sleap-diagnostic
 
 # run:
+
 make sure you have access to the model_paths.csv file that you will use to get the models' paths. if using spyder access GPFS from spyder before trying to run.
 
 cd into the cloned repository's "sleapgui" folder (e.g. D:\GitHub\autosleap\sleapgui)
