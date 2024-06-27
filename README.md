@@ -6,11 +6,13 @@ written by Shahaf Weiss 2024.
 
 
 This App is used to run SLEAP inference of multiple models, on multiple videos, in parallel.
-use cases:
-example 1: 10 videos of a mouse hunting crickets, require running each video through a mouse tracking model and a cricket tracking model.
 
 
-example 2: a folder containing 10 videos of a mouse in an open field. you can use a "folder" option to run the model(s) on all videos in the folder.
+
+Use case #1: 10 videos of a mouse hunting crickets, require running each video through a mouse tracking model and a cricket tracking model.
+
+
+Use case #2: a folder containing 10 videos of a mouse in an open field. you can use a "folder" option to run the model(s) on all videos in the folder.
 
 
 
