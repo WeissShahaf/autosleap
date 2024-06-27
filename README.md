@@ -25,7 +25,7 @@ Use case #2: a folder containing 10 videos of a mouse in an open field. you can 
  input_path: a video file or folder containing video files
  csv_path: path to a csv file containing model paths
  model_type: a list of model types (must exit in csv_path file)
-The script runs sleap sleap-track,sleap-convert,sleap-render commands on all files for all model types. Includes autmated GPU and RAM managment and can run multiple video files in parallel. 
+
 
 
 
@@ -74,7 +74,10 @@ cd into the cloned repository's "sleapgui" folder (e.g. D:\GitHub\autosleap\slea
 run: python autosleap.py
 
 
+The script runs sleap sleap-track,sleap-convert,sleap-render commands on all files for all model types. 
 
+
+Includes autmated GPU and RAM managment and can run multiple video files in parallel. 
 
 
 
