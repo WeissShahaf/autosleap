@@ -7,6 +7,9 @@ written by Shahaf Weiss 2024.
 
 This App is used to run SLEAP inference of multiple models, on multiple videos, in parallel.
 
+the GUI is written with PySide2 to keep inline with SLEAP dependencies.
+
+
 Models can be manually loaded or read from a CSV file (see example in Docs). the parameters used are stored in a json file, and preloaded the next time the app is loaded.
 
 
