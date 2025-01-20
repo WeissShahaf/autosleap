@@ -1,0 +1,109 @@
+{
+ "version": "auto-py-to-exe-configuration_v1",
+ "pyinstallerOptions": [
+  {
+   "optionDest": "noconfirm",
+   "value": true
+  },
+  {
+   "optionDest": "filenames",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/autosleap.py"
+  },
+  {
+   "optionDest": "onefile",
+   "value": false
+  },
+  {
+   "optionDest": "console",
+   "value": false
+  },
+  {
+   "optionDest": "clean_build",
+   "value": false
+  },
+  {
+   "optionDest": "strip",
+   "value": false
+  },
+  {
+   "optionDest": "noupx",
+   "value": false
+  },
+  {
+   "optionDest": "disable_windowed_traceback",
+   "value": false
+  },
+  {
+   "optionDest": "embed_manifest",
+   "value": true
+  },
+  {
+   "optionDest": "uac_admin",
+   "value": false
+  },
+  {
+   "optionDest": "uac_uiaccess",
+   "value": false
+  },
+  {
+   "optionDest": "argv_emulation",
+   "value": false
+  },
+  {
+   "optionDest": "bootloader_ignore_signals",
+   "value": false
+  },
+  {
+   "optionDest": "win_private_assemblies",
+   "value": false
+  },
+  {
+   "optionDest": "win_no_prefer_redirects",
+   "value": false
+  },
+  {
+   "optionDest": "ascii",
+   "value": false
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/__init__.py;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/autopy_config.json;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/autosleap.py;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/autosleap_logo.jpg;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/classes.py;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/export_with_channels.py;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/gui12.py;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/half_logo.jpg;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "D:/GitHub/NewGit/autosleapSW/sleapgui/utils.py;."
+  }
+ ],
+ "nonPyinstallerOptions": {
+  "increaseRecursionLimit": true,
+  "manualArguments": ""
+ }
+}
