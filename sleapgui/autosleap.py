@@ -3,7 +3,7 @@ from PySide2.QtWidgets import QApplication
 import sys
 import os
 from classes import SleapProcessor
-from gui16 import InputBox
+from gui18 import InputBox
 from pathlib import Path, PureWindowsPath
 from utils import ascii_logo
 
