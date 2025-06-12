@@ -1,38 +1,67 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jun 12 10:41:23 2025
+
+@author: su-weisss
+"""
+
 import os
 import sys
 import json
-import IPython         
+import platform     
 import traceback
 import pandas as pd
 from utils import find_logo
 from classes import SleapProcessor
 from itertools import chain, combinations
-from pathlib import Path, PureWindowsPath
-from PySide2.QtCore import Qt,QThread, Signal
-from PySide2.QtGui import QIcon, QPixmap, Qt, QPalette, QColor, QFont
-from PySide2.QtWidgets import QApplication, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QComboBox, QFileDialog, QWidget, QDesktopWidget, QCheckBox, QTextEdit, QGridLayout,QSizePolicy,QRadioButton
+from pathlib import Path#, PureWindowsPath
+from PySide2.QtCore import QThread, Signal#,Qt,
+from PySide2.QtGui import  QPixmap, Qt, QPalette, QColor,QTextCursor#, QFont,QIcon
+from PySide2.QtWidgets import QApplication, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QComboBox, QFileDialog, QWidget, QCheckBox, QTextEdit, QGridLayout,QSizePolicy#,QRadioButton QDesktopWidget,
+
+class OutputRedirector:
+    def __init__(self, text_edit):
+        self.text_edit = text_edit
+
+    def write(self, text):
+        self.text_edit.append(text)
+        self.text_edit.moveCursor(QTextCursor.End)  # Move the cursor to the end of the text
+        self.text_edit.ensureCursorVisible()  # Ensure the cursor is visible
+
+# class OutputRedirector:
+#      def __init__(self, text_edit):
+#          self.text_edit = text_edit
+
+#      def write(self, text):
+#          self.text_edit.append(text)
 
 class SleapThread(QThread):
+    signal = Signal(str)
+
     def __init__(self, sleap_processor):
         QThread.__init__(self)
         self.sleap_processor = sleap_processor
 
-    def run(self):
-        self.sleap_processor.run_sleap()
+    def run(self):          
+
+            output = self.sleap_processor.run_sleap()
+            self.signal.emit(output)
+#            self.update_status_message(output)
 
 class InputBox(QWidget):    
 
-               
+                                
     def __init__(self):
         """
         Initialize the GUI and load any previously saved configuration.
         """
-        super().__init__()       
+        super().__init__()        
 
         # Initialize the parameters with default values
         self.file_path = Path()
         self.animal_type = []
-        self.csv_path = Path("\\\\gpfs.corp.brain.mpg.de\\stem\\data\\project_hierarchy\\Sleap_projects\\sleap_model_paths.csv")
+        # 1. Modify self.csv_path to a string for cross-platform compatibility
+        self.csv_path = str(Path("//gpfs.corp.brain.mpg.de/stem/data/project_hierarchy/Sleap_projects/sleap_model_paths.csv"))
         self.optional_args = ''
         self.user_model_path = None  # New attribute for user selected model path
         self.model_prefix = ''
@@ -40,12 +69,18 @@ class InputBox(QWidget):
         self.csv_layout =  QGridLayout()
         self.manual_layout =  QGridLayout()
         self.log_file_path=''
-       
-        # Construct the path to the configuration file
-        env_dir = Path(sys.prefix)       
-        env_dir=env_dir.joinpath(env_dir, 'scripts')
+        
+    
         # Initialize the configuration file path  
-        self.config_path = Path(env_dir, 'autosleap_config.json')  
+
+                        
+        # 2. Change home_directory to point to the script's running directory
+        script_dir = Path(sys.argv[0]).parent
+        config_file_name='autosleap_config.json'
+        self.config_path = script_dir / config_file_name
+        
+        
+#        self.config_path = Path(env_dir, 'autosleap_config.json')  
 
         # If the configuration file exists and is not empty, fill in values from the configuration file
         if self.config_path.exists() and os.path.getsize(self.config_path) > 0:
@@ -57,11 +92,11 @@ class InputBox(QWidget):
             self.csv_path = Path(data['csv_path'])
             self.optional_args = data['optional_args']
             self.chosen_model = Path(data['chosen_model'])
-            self.model_prefix = data['model_prefix']                                     
-       
+            self.model_prefix = data['model_prefix']                            
+        
         self.initUI()
 
-   
+    
     def initUI(self):
         """
         Initialize the user interface elements of the GUI.
@@ -70,7 +105,7 @@ class InputBox(QWidget):
 #        grid_layout = QGridLayout()
         layout = QVBoxLayout()
         layout.setSpacing(20)
-          
+            
         #set the layout to display
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor('white'))  # Change 'red' to your desired color
@@ -84,7 +119,7 @@ class InputBox(QWidget):
         label.setPixmap(pixmap)
         label.setAlignment(Qt.AlignCenter)  # Center the pixmap object in the bo
         layout.addWidget(label)
-                
+                                
 
         self.setWindowTitle("Auto-sleap GUI")
 
@@ -140,7 +175,7 @@ class InputBox(QWidget):
         
         self.csv_layout.addWidget(QLabel("CSV file containing model Paths:"),0,0,1,1)
         self.model_path_CSV_le = QLineEdit()
-        self.model_path_CSV_le.setText("\\\\gpfs.corp.brain.mpg.de\\stem\\data\\project_hierarchy\\Sleap_projects\\sleap_model_paths.csv")
+        self.model_path_CSV_le.setText(str(self.csv_path)) # Set initial text using the corrected self.csv_path
         self.csv_layout.addWidget(self.model_path_CSV_le,0,1,1,3)
         
         
@@ -176,7 +211,7 @@ class InputBox(QWidget):
         # Add a new browse button for model selection
         self.btn_model = QPushButton("Browse for model")
         self.btn_model.clicked.connect(self.getfolder)
-        self.btn_model.clicked.connect(self.switch_model_mode(state=True))        
+        self.btn_model.clicked.connect(lambda: self.switch_model_mode(state=Qt.Checked)) # Connect with a lambda to pass Qt.Checked
         self.manual_layout.addWidget(self.btn_model,0,3,1,1)
 
 
@@ -185,7 +220,7 @@ class InputBox(QWidget):
         self.model_prefix_le = QLineEdit()
         self.manual_layout.addWidget(self.model_prefix_le,1,1,1,2)
         
-         # Add a new button for saving model to CSV file
+        # Add a new button for saving model to CSV file
         self.btn_save_model = QPushButton("Save Model to CSV File")
         self.btn_save_model.clicked.connect(self.save_model_to_csv)
         self.manual_layout.addWidget(self.btn_save_model,1,3,1,1)
@@ -196,8 +231,7 @@ class InputBox(QWidget):
         layout.addLayout(options_layout)
         
         self.fill_from_config()
-            
-
+                
 
         layout.addSpacing(spacing)
         
@@ -208,7 +242,7 @@ class InputBox(QWidget):
         GUI_layout.addWidget(self.quit_btn)
         
         
-       
+        
         self.reset_btn = QPushButton("reset GUI")
         self.reset_btn.clicked.connect(self.reset)
         GUI_layout.addWidget(self.reset_btn)
@@ -220,10 +254,16 @@ class InputBox(QWidget):
         GUI_layout.addWidget(self.submit_btn)
 
         layout.addLayout(GUI_layout)
+        
+        self.status_message = QTextEdit("status: waiting for user input")
+        layout.addWidget(self.status_message)
+
+        # Redirect standard output to the QTextEdit
+        sys.stdout = OutputRedirector(self.status_message)
       
         
-        self.status_message = QLabel("status: waiting for user input")
-        layout.addWidget(self.status_message)
+        # self.status_message = QLabel("status: waiting for user input")
+        # layout.addWidget(self.status_message)
 
       
         
@@ -235,7 +275,7 @@ class InputBox(QWidget):
         
     def fill_from_config(self):
     #get previous data to prefill if config file exists
-     if self.config_path.exists() and os.path.getsize(self.config_path) > 0:
+      if self.config_path.exists() and os.path.getsize(self.config_path) > 0:
         with open(self.config_path, 'r') as f:
             data = json.load(f)
 
@@ -246,12 +286,12 @@ class InputBox(QWidget):
         self.model_prefix_le.setText(data['model_prefix'])
     
     def onRadioButtonToggled(self):
-     if self.radioButton1.isChecked():
-         self.showLayout(self.csv_layout)
-         self.hideLayout(self.manual_layout)
-     else:
-         self.hideLayout(self.csv_layout)
-         self.showLayout(self.manual_layout)
+      if self.radioButton1.isChecked():
+          self.showLayout(self.csv_layout)
+          self.hideLayout(self.manual_layout)
+      else:
+          self.hideLayout(self.csv_layout)
+          self.showLayout(self.manual_layout)
 
     def showLayout(self, layout):
         for i in range(layout.count()):
@@ -260,10 +300,10 @@ class InputBox(QWidget):
                 widget.show()
 
     def hideLayout(self, layout):
-     for i in range(layout.count()):
-         widget = layout.itemAt(i).widget()
-         if widget is not None:
-             widget.hide()
+      for i in range(layout.count()):
+          widget = layout.itemAt(i).widget()
+          if widget is not None:
+              widget.hide()
 
     def reset(self):
         """
@@ -306,14 +346,15 @@ class InputBox(QWidget):
             self.update_combos(useCSV=True)
 
     def update_csv_combos(self):
-        self.csv_path==Path(self.model_path_CSV_le.text())
+        # Ensure self.csv_path is updated from the QLineEdit before calling update_combos
+        self.csv_path = Path(self.model_path_CSV_le.text())
         self.update_combos(useCSV=True)
 
     def getfolder(self):
         """
         Open a folder dialog and update the model path text field with the selected folder.
         """
-        folder = QFileDialog.getExistingDirectory(self, "Select Directory")     
+        folder = QFileDialog.getExistingDirectory(self, "Select Directory")    
         if folder:
             self.model_path_le.setText(folder)
             self.le.setText(folder)
@@ -338,6 +379,7 @@ class InputBox(QWidget):
             self.hideLayout(self.csv_layout)
             self.showLayout(self.manual_layout)
         else:
+            # If manual is unchecked, ensure CSV is checked and update combos
             self.use_csv_checkbox.setChecked(True)
             self.update_combos(useCSV=True)
             self.showLayout(self.csv_layout)
@@ -354,6 +396,7 @@ class InputBox(QWidget):
             self.hideLayout(self.manual_layout)
             self.update_combos(useCSV=True)
         else:
+            # If CSV is unchecked, ensure manual is checked
             self.manual_model_checkbox.setChecked(True)
             self.use_csv_checkbox.setChecked(False)
             self.hideLayout(self.csv_layout)
@@ -370,45 +413,68 @@ class InputBox(QWidget):
         Update the model types dropdown based on the available models.
         """
         if useCSV:
-            csvfile= self.csv_path
+            csvfile = self.csv_path
         else:
-            csvfile=Path(csvfile)
-       # print(csvfile)         
+            # If csvfile is explicitly provided and not None, convert it to Path
+            if csvfile is not None:
+                csvfile = Path(csvfile)
+            else:
+                # If no csvfile is provided and useCSV is False, try to get from QLineEdit
+                csvfile = Path(self.model_path_CSV_le.text())
 
-        df = pd.read_csv(csvfile, engine="python", sep=',', encoding="cp437")
-        animals = df['model type'].tolist()
 
-        combos = self.all_combinations(animals)
-
-        #  Use a set to store the combinations
-        combo_set = set()
-
-        for combo in combos:
-            # Convert the combination to a string
-            combo_str = ", ".join(combo)
-
-            # Add the combination to the set
-            combo_set.add(combo_str)
-
-            # Clear the dropdown menu
-            self.cb.clear()
-
-        # Add the combinations in the set to the dropdown menu
-        for combo_str in combo_set:
-            self.cb.addItem(combo_str)
+        try:
+            if not csvfile.exists():
+                self.getfile_csv()
+                csvfile = self.csv_path
+        except Exception as e:
+            print(f"Please check 'destination is available: {csvfile}'. Error: {e}")
+            useCSV=False
+       # print(csvfile)          
+        if useCSV and csvfile.exists(): # Added check for csvfile.exists() to prevent error            
+            df = pd.read_csv(csvfile, engine="python", sep=',', encoding="cp437")
+            animals = df['model type'].tolist()
+    
+            combos = self.all_combinations(animals)
+    
+            #  Use a set to store the combinations
+            combo_set = set()
+    
+            for combo in combos:
+                # Convert the combination to a string
+                combo_str = ", ".join(combo)
+    
+                # Add the combination to the set
+                combo_set.add(combo_str)
+    
+                # Clear the dropdown menu
+                self.cb.clear()
+    
+            # Add the combinations in the set to the dropdown menu
+            for combo_str in combo_set:
+                self.cb.addItem(combo_str)
 
     def save_model_to_csv(self):
         """
         Save the current model to the CSV file.
         """
+        # Ensure self.csv_path is up-to-date with the QLineEdit value
+        self.csv_path = Path(self.model_path_CSV_le.text())
+
         # Check if the CSV file exists
-        if not os.path.exists(self.csv_path):
+        if not self.csv_path.exists():
             # If it doesn't exist, open a file dialog for the user to choose where to save the CSV file and name it
             self.get_save_csv_file()
-        else:
-            # If it does exist, proceed with saving the model to the CSV file
+            # After get_save_csv_file, self.csv_path will be updated. If the user cancels, it won't be,
+            # so we check again before proceeding.
+            if not self.csv_path.exists(): # If user cancelled, exit
+                print("CSV save cancelled by user.")
+                return
+        
+        # If it does exist (or was just created), proceed with saving the model to the CSV file
+        try:
             # Read the CSV file
-            df = pd.read_csv(self.csv_path,engine="python",sep=',',encoding="cp437")
+            df = pd.read_csv(self.csv_path, engine="python", sep=',', encoding="cp437")
 
             # Get the current model prefix
             current_model_prefix = self.model_prefix_le.text()
@@ -417,10 +483,22 @@ class InputBox(QWidget):
             if current_model_prefix not in df['model type'].values:
                 # If it doesn't exist, append a new row to the DataFrame
                 new_row = {'model type': current_model_prefix, 'path to model folder': str(Path(self.model_path_le.text()))}
-                df = df.append(new_row, ignore_index=True)
+                # Use pd.concat instead of append for newer pandas versions
+                new_row_df = pd.DataFrame([new_row])
+                df = pd.concat([df, new_row_df], ignore_index=True)
 
                 # Write the DataFrame back to the CSV file
                 df.to_csv(self.csv_path, index=False)
+                print(f"Model '{current_model_prefix}' saved to {self.csv_path}")
+            else:
+                print(f"Model '{current_model_prefix}' already exists in {self.csv_path}. Not adding duplicate.")
+            
+            # After saving, update the comboboxes to reflect the new entry
+            self.update_combos(useCSV=True)
+
+        except Exception as e:
+            print(f"Error saving model to CSV: {e}")
+
 
     def get_save_csv_file(self):
         """
@@ -432,27 +510,47 @@ class InputBox(QWidget):
 
 
     def save_config(self, file_path=None, csv_path=None, optional_args=None, animal_type=None, chosen_model=None, model_prefix=None):
-         """
-         Save the current configuration to the configuration file.
-         Or override with user inputs
-         """     
-         #format data for config file
-         data = {
-             'file_path': file_path if file_path is not None else str(self.le.text()),
-             'csv_path': csv_path if csv_path is not None else str(self.model_path_CSV_le.text()),
-             'optional_args': optional_args if optional_args is not None else self.optional_args_le.text(),
-             'animal_type': animal_type if animal_type is not None else self.cb.currentText().split(','),
-             'chosen_model': chosen_model if chosen_model is not None else str(self.chosen_model),
-             'model_prefix': model_prefix if model_prefix is not None else self.model_prefix_le.text(),
-         }
-         #write config file
-         with open(self.config_path, 'w') as f:
-                  json.dump(data, f)
+          """
+          Save the current configuration to the configuration file.
+          Or override with user inputs
+          """      
+          #format data for config file
+          data = {
+              'file_path': file_path if file_path is not None else str(self.le.text()),
+              'csv_path': csv_path if csv_path is not None else str(self.model_path_CSV_le.text()),
+              'optional_args': optional_args if optional_args is not None else self.optional_args_le.text(),
+              'animal_type': animal_type if animal_type is not None else self.cb.currentText().split(','),
+              'chosen_model': chosen_model if chosen_model is not None else str(self.chosen_model),
+              'model_prefix': model_prefix if model_prefix is not None else self.model_prefix_le.text(),
+          }
+          #write config file
+          with open(self.config_path, 'w') as f:
+                      json.dump(data, f)
     
     def update_status_message(self, message):
-        self.status_message.setText(message)
+        # Check if 'message' is a string
+        if isinstance(message, str):
+          self.status_message.append(message)
+          
+        # Check if 'message' is a list
+        elif isinstance(message, list):
+          # Check if all items in the list are strings
+            if all(isinstance(item, str) for item in message):
         
-   
+              message_str = '\n'.join(message)  # Join all items in the list into a single string separated by newlines
+              self.status_message.append(message_str)  # Append the resulting string to the QTextEdit
+        
+        else:
+          # Assuming message is a list of non-string items
+          message_str = '\n'.join(str(item) for item in message)  # Convert each item to a string and join them
+          self.status_message.append(message_str)
+
+        # self.status_message.append(message)
+        #self.status_message.setText(message)
+        self.status_message.moveCursor(QTextCursor.End)  # Move the cursor to the end of the text
+        self.status_message.ensureCursorVisible()  # Ensure the cursor is visible
+
+    
     
     def run_sleapGUI(self):
         """
@@ -460,9 +558,9 @@ class InputBox(QWidget):
         """
         message = "RUNNING SLEAP"
         #self.thread.signal.connect(self.update_status_message)
-        self.update_status_message(message) 
-        noErrors=True
-        try:        
+        self.update_status_message(message)  
+
+        try:          
             file_path = Path(self.le.text())    
             csv_path = Path(self.model_path_CSV_le.text())
             manual_model_path = Path(self.model_path_le.text())
@@ -473,18 +571,19 @@ class InputBox(QWidget):
                 animal_type = [self.model_prefix_le.text()]
             elif self.use_csv_checkbox.isChecked():
                 chosen_model=csv_path
-                animal_type = self.cb.currentText().split(',')        
+                animal_type = self.cb.currentText().split(',')         
             
             self.chosen_model= chosen_model
 #            sleap_processor = SleapProcessor(self.update_status_message)
-            sleap_processor = SleapProcessor()
+            #leap_processor = SleapProcessor()
+            sleap_processor = SleapProcessor(self.update_status_message)
     
             
             sleap_processor.paths_csv=csv_path
             sleap_processor.chosen_model = chosen_model
     
             # Set the output directory
-            directory = Path(os.path.dirname(file_path)) / 'tracked'      
+            directory = Path(os.path.dirname(file_path)) / 'tracked'        
             directory.mkdir(exist_ok=True)
 
             # Construct the log file path
@@ -493,31 +592,31 @@ class InputBox(QWidget):
             
             sleap_processor.log_file_path= log_file_path
             sleap_processor.start_logger()
-            sleap_processor.logger.info('Processing: input_folder=%s,  model_type=%s, csv_file=%s, logger_path=%s', file_path, animal_type, csv_path,log_file_path)        
+            sleap_processor.logger.info('Processing: input_folder=%s,  model_type=%s, csv_file=%s, logger_path=%s', file_path, animal_type, csv_path,log_file_path)            
     
             op_arg=self.optional_args_le.text()
-               
-            #IPython.core.debugger.set_trace()           
+                        
+            
+            
             #write to config file
             self.save_config(file_path=str(file_path), csv_path=str(csv_path), animal_type=animal_type,optional_args=op_arg)
     
-            # run read from config file 
+            # run read from config file  
             sleap_processor.config_path = self.config_path
             sleap_processor.read_config()
-            # run sleap pipeline in a seperate thread
+            # Create a new thread and move the sleap_processor instance to it
             self.thread = SleapThread(sleap_processor)
+            self.thread.signal.connect(self.update_status_message)
             self.thread.start()
-            sleap_processor.run_sleap()
-
     
-        except Exception as e: #if there's an error, show it to the user
-            noErrors = False
+        except Exception as e: #if there's an error, show it to the user            
             tb = traceback.format_exc()
             message =f"An error occurred: {str(e)}\n{tb}"
             #self.thread.signal.connect(self.update_status_message)
-            self.update_status_message(message)         
-           
-                    
+            self.update_status_message(message)    
+            
+            
+                        
 def manage_app():
         # Check if QApplication instance exists
         app = QApplication.instance()
@@ -535,5 +634,3 @@ if __name__ == '__main__':
     ex = InputBox()
     ex.show()
     app.exec_()
-
-                       

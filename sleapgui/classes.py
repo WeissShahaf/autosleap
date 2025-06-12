@@ -1,5 +1,4 @@
 import os
-import IPython
 import sys
 import subprocess
 import pandas as pd
@@ -131,7 +130,7 @@ class SleapProcessor:
 
         # Define the number of processes based on RAM and VRAM
         if GPU_GB_limit is None:
-         GPU_GB_limit = 12  # Limit the GPU memory to 12GB
+         GPU_GB_limit =12  # Limit the GPU memory to 12GB
         # cricket model takes ~7GB VRAN to run on batch size = 4
 
         CPU_GB_limit = 5  # Limit the CPU memory to 12GB
@@ -139,8 +138,9 @@ class SleapProcessor:
         num_processes = min(
             round(total_ram / CPU_GB_limit), round(total_vram / GPU_GB_limit)
         )
+     
         # case something went wrong:
-        if num_processes <= 1:
+        if num_processes < 1:
             num_processes = 1
             
         self.num_processes=num_processes
@@ -189,7 +189,7 @@ class SleapProcessor:
          # )
         if csv_path is None:
            csv_path = self.paths_csv
-       # IPython.core.debugger.set_trace()           
+                            
         model_paths_df = pd.read_csv(csv_path,engine="python",sep=',',encoding="cp437")
         model_paths_df["path to model folder"] = model_paths_df[
             "path to model folder"
@@ -265,37 +265,56 @@ class SleapProcessor:
 
         if Path.is_file(Path(input_path)):
             if self.optional_args:        
-                 track_command = (
-                     f"sleap-track -m {model} -o {output_slp_path} {self.optional_args} {input_path}"
-                 )
+                track_command = (
+                    f"sleap-track -m \"{model}\" -o \"{output_slp_path}\" {self.optional_args} \"{input_path}\""
+                )
             else:
-                 track_command = (
-                     f"sleap-track -m {model} -o {output_slp_path} {input_path}"
-                 )
+                track_command = (
+                f"sleap-track -m \"{model}\" -o \"{output_slp_path}\" \"{input_path}\""
+                )
+            # if self.optional_args:        
+            #      track_command = (
+            #          f"sleap-track -m {model} -o {output_slp_path} {self.optional_args} {input_path}"
+            #      )
+            # else:
+            #      track_command = (
+            #          f"sleap-track -m {model} -o {output_slp_path} {input_path}"
+            #      )
 
             self.logger.info('Running command: %s', track_command)
             self.handle_subprocess(track_command)  # Get the output of the command
         else:
             self.logger.error(f"cannot infer video, file does not exist: {input_path} ")  
     
+        
         # Convert to h5 format
         if output_slp_path and Path(output_slp_path).is_file():
-            h5_command = f"sleap-convert -o {output_h5_path} --format analysis {output_slp_path}"         
+            h5_command = f"sleap-convert -o \"{output_h5_path}\" --format analysis \"{output_slp_path}\""
             self.logger.info('Running command: %s', h5_command)
             self.handle_subprocess(h5_command)
         else:
             self.logger.error(f"cannot convert video, file does not exist: {output_slp_path} ")
-    
+        
         # Render video with poses
         if output_h5_path and Path(output_h5_path).is_file():
-         render_command = (
-            f"sleap-render -o {output_mp4_path} -f 50 {output_slp_path}"
-         )
-         # Log the command
-         self.logger.info('Running command: %s', render_command)
-         self.handle_subprocess(render_command)
+            render_command = (
+                f"sleap-render -o \"{output_mp4_path}\" -f 50 \"{output_slp_path}\""
+            )
+            # Log the command
+            self.logger.info('Running command: %s', render_command)
+            self.handle_subprocess(render_command)
         else:
             self.logger.error(f"cannot render video, file does not exist: {output_slp_path} ")
+        # # Render video with poses
+        # if output_h5_path and Path(output_h5_path).is_file():
+        #  render_command = (
+        #     f"sleap-render -o {output_mp4_path} -f 50 {output_slp_path}"
+        #  )
+        #  # Log the command
+        #  self.logger.info('Running command: %s', render_command)
+        #  self.handle_subprocess(render_command)
+        # else:
+        #     self.logger.error(f"cannot render video, file does not exist: {output_slp_path} ")
     
         # Print paths of created files
         names = [output_slp_path, output_h5_path, output_mp4_path]
@@ -319,9 +338,12 @@ class SleapProcessor:
         
         if len(video_files) == 1:#single file
             self.process_video_file(video_files[0], input_folder, output_folder, model_type, model_path)
+            num_processes=1
         else: #multiple files
             num_processes = self.get_num_processes()
-            num_processes = min(4, len(video_files))  # Ensure num_processes does not exceed length of video_files
+            if num_processes<1:
+                num_processes=1
+            
 #            if num_processes > len(video_files): num_processes = len(video_files)
 
             out=f"# of parallel processes: {num_processes}"
@@ -367,7 +389,7 @@ class SleapProcessor:
         
         P = Path(input_path)
       
-#        IPython.core.debugger.set_trace()           
+
         if Path.is_dir(Path(input_path)):
             input_folder = Path(input_path)
             output_folder = Path(os.path.join(input_folder, suffix))
@@ -396,7 +418,8 @@ class SleapProcessor:
              model_path = csv_path
             else:
              model_path = self.find_model_path_from_csv(model_type,csv_path)
-             
+            
+            print(model_path)
              #run the files
             self.process_files(
                 video_files,
