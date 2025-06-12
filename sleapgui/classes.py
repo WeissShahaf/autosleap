@@ -235,20 +235,17 @@ class SleapProcessor:
             if num_processes > len(video_files):
                 num_processes = len(video_files)
         
-            self.update_status_callback(f"Starting processing pool with {num_processes} parallel process(es)...")
+            #self.update_status_callback(f"Starting processing pool with {num_processes} parallel process(es)...")
         
             try:
-                with Pool(processes=num_processes) as pool:
-                    results = pool.map(_process_video_worker, pool_args)
+                # with Pool(processes=num_processes) as pool:
+                #     results = pool.map(_process_video_worker, pool_args)
                 
-                self.update_status_callback("\n--- All parallel processes finished. Results: ---")
-                for result in results:
-                    self.update_status_callback(result)
-                    self.update_status_callback("=" * 60)
-            except Exception as e:
-                error_message = f"A multiprocessing error occurred: {e}"
-                self.update_status_callback(error_message)
-                self.logger.error(error_message, exc_info=True)
+                # self.update_status_callback("\n--- All parallel processes finished. Results: ---")
+                # for result in results:
+                #     self.update_status_callback(result)
+                #     self.update_status_callback("=" * 60)
+           
         
                 # Fallback to serial processing
                 self.update_status_callback("Switching to serial processing...")
@@ -258,6 +255,10 @@ class SleapProcessor:
                     results.append(result)
                     self.update_status_callback(result)
                     self.update_status_callback("=" * 60)
+            except Exception as e:
+                        error_message = f"A multiprocessing error occurred: {e}"
+                        self.update_status_callback(error_message)
+                        self.logger.error(error_message, exc_info=True)
         # if len(video_files) == 1:
         #     self.update_status_callback("Processing single file...")
         #     result = _process_video_worker(pool_args[0])
