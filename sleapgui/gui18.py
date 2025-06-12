@@ -482,7 +482,7 @@ class InputBox(QWidget):
             # Check if the current model prefix exists in the 'model type' column
             if current_model_prefix not in df['model type'].values:
                 # If it doesn't exist, append a new row to the DataFrame
-                new_row = {'model type': current_model_prefix, 'path to model folder': str(Path(self.model_path_le.text()))}
+                new_row = {'model type': current_model_prefix, 'path to model folder': Path(self.model_path_le.text()).as_posix()}
                 # Use pd.concat instead of append for newer pandas versions
                 new_row_df = pd.DataFrame([new_row])
                 df = pd.concat([df, new_row_df], ignore_index=True)
